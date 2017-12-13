@@ -26,7 +26,7 @@ namespace Collobrator_update
         public static string strCheckOut_keyword = "CheckedOut:";
         /// <summary>
         /// Cmd 的摘要说明。
-        /// </summary>b
+        /// </summary>
         public class Cmd
         {
             private Process proc = null;
