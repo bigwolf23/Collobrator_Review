@@ -18,75 +18,19 @@ namespace Collobrator_update
         {
             InitializeComponent();
         }
+        public class DisplayData
+        {
+            public string FilePath { get; set; }
+            public string strFileConvertSuccess { get; set; }
+            public string strDecription { get; set; }
+        }
+
 
         public static string strCollobarate_new_cmd = "ccollab addversions new";
         //public static string strCollobarate_cmd = "ipconfig";
         public static string strNew_keyword = "New review created: Review #";
         public static string strCheckIn_keyword = "CHECKEDIN";
         public static string strCheckOut_keyword = "CheckedOut:";
-        /// <summary>
-        /// Cmd 的摘要说明。
-        /// </summary>
-        public class Cmd
-        {
-            private Process proc = null;
-            /// <summary>
-            /// 构造方法
-            /// </summary>
-            public Cmd()
-            {
-                proc = new Process();
-            }
-            /// <summary>
-            /// 执行CMD语句
-            /// </summary>
-            /// <param name="cmd">要执行的CMD命令</param>
-            public string RunCmd(string cmd)
-            {
-                proc.StartInfo.CreateNoWindow = false;
-                proc.StartInfo.FileName = "cmd.exe";
-                proc.StartInfo.UseShellExecute = false;
-                proc.StartInfo.RedirectStandardError = true;
-                proc.StartInfo.RedirectStandardInput = true;
-                proc.StartInfo.RedirectStandardOutput = true;
-                proc.Start();
-                proc.StandardInput.WriteLine(cmd);
-                proc.StandardInput.WriteLine("exit");
-                string outStr = proc.StandardOutput.ReadToEnd();
-                proc.Close();
-                return outStr;
-            }
-            /// <summary>
-            /// 打开软件并执行命令
-            /// </summary>
-            /// <param name="programName">软件路径加名称（.exe文件）</param>
-            /// <param name="cmd">要执行的命令</param>
-            public void RunProgram(string programName, string cmd)
-            {
-                Process proc = new Process();
-                proc.StartInfo.CreateNoWindow = true;
-                proc.StartInfo.FileName = programName;
-                proc.StartInfo.UseShellExecute = false;
-                proc.StartInfo.RedirectStandardError = true;
-                proc.StartInfo.RedirectStandardInput = true;
-                proc.StartInfo.RedirectStandardOutput = true;
-                proc.Start();
-                if (cmd.Length != 0)
-                {
-                    proc.StandardInput.WriteLine(cmd);
-                }
-                proc.Close();
-            }
-            /// <summary>
-            /// 打开软件
-            /// </summary>
-            /// <param name="programName">软件路径加名称（.exe文件）</param>
-            public void RunProgram(string programName)
-            {
-                this.RunProgram(programName, "");
-            }
-        }
-
 
         private void Form1_Load(object sender, EventArgs e)
         {
@@ -118,9 +62,6 @@ namespace Collobrator_update
             }
         }
 
-        
-
-
         private void getClearCaseFilePath(ref List<string> strFileListOut)
         {
             string ClearcaseFilePath = ClearCaseFilePath.Text;
@@ -146,13 +87,6 @@ namespace Collobrator_update
             }
             sr.Close();
             fs.Close();
-        }
-
-        public class DisplayData
-        {
-            public string FilePath { get; set; }
-            public string strFileConvertSuccess { get; set; }
-            public string strDecription { get; set; }
         }
 
 
@@ -277,94 +211,94 @@ namespace Collobrator_update
             strOldPath = strFilePathOld;
         }
 
-        private void addNewReviewFile(string strReviewId)
-        {
-            List<string> strFileList = new List<string>();
-            List<string> m_pFileFullPaths = new List<string>();
-            getClearCaseFilePath(ref strFileList);
-            getNewReviewFilePath(strReviewId, strFileList, ref m_pFileFullPaths);
-            List<DisplayData> m_pDisplayData = new List<DisplayData>();
-
-            foreach (string strTemp in m_pFileFullPaths)
-            {
-                DisplayData temp = new DisplayData();
-                temp.strFileConvertSuccess = "Fail";
-                temp.strFileConvertSuccess = runCmd(strTemp);
-                m_pDisplayData.Add(temp);
-            }
-            displayDataFalseOrSuccess(m_pDisplayData);
-        }
-
-        private void getColobaratorFilePath(string strReviewId, List<string> strFileList)
-        {
-            List<DisplayData> m_pFileFullPaths = new List<DisplayData>();
-            bool bFistInsert = true;
-            string strReviewIdTemp = strReviewId;
-            foreach (string strTemp in strFileList)
-            {
-                int nCheckinWordPos = strTemp.IndexOf(strCheckIn_keyword,0);
-                string strFilePathOld = strTemp.Substring(25,nCheckinWordPos-25);
-                int nFileVerInClearCasePos = strFilePathOld.LastIndexOf(@"\");
-                string strFileVerInClearCase = strFilePathOld.Substring(nFileVerInClearCasePos + 1);
-                int nFileVerOld = int.Parse(strFileVerInClearCase);
-                int nFileVerNew = nFileVerOld + 1;
-
-                strFilePathOld = strFilePathOld.Replace(@" \main\int_", @"@@\main\int_");
-                strFilePathOld = ClearCase_MapPath.Text + strFilePathOld;
-                //strFilePathOld = @"Z:\" + strFilePathOld;
-
-                string strFilePathNew = strFilePathOld;
-                nFileVerInClearCasePos = strFilePathNew.LastIndexOf(@"\");
-                strFilePathNew = strFilePathNew.Remove(nFileVerInClearCasePos+1);
-                strFilePathNew = strFilePathNew + Convert.ToString(nFileVerNew);
-
-                string strFileFormatAll;
-                bFistInsert = false;
-
-                DisplayData temp = new DisplayData();
-                
-                temp.strFileConvertSuccess = "Fail";
-
-                if (bFistInsert)
-                {
-                    strFileFormatAll = strCollobarate_new_cmd +
-                    @"  " + "\"" +
-                    strFilePathNew + "\"" + "\"" +
-                    strFilePathOld + "\"";
-
-                    temp.FilePath = strFileFormatAll;
-                    temp.strFileConvertSuccess = runNewCmd(strFileFormatAll, ref strReviewIdTemp);
-                }
-                else
-                {
-                    strFileFormatAll = @"ccollab addversions " +
-                    strReviewId + @"  " + "\"" +
-                    strFilePathNew + "\"" + "\"" +
-                    strFilePathOld + "\"";
-
-                    temp.FilePath = strFileFormatAll;
-                    temp.strFileConvertSuccess = runCmd(strFileFormatAll);
-                }
-
-                //@"ccollab addversions ";
-                m_pFileFullPaths.Add(temp);
-            }
-            displayDataFalseOrSuccess(m_pFileFullPaths);
-        }
-
-        private string getVersionNo()
-        {
-            string sVersionNo = "";
-            Cmd c = new Cmd();
-            string strCmdReturn = c.RunCmd(strCollobarate_new_cmd);
-            //string strCmdReturn = c.RunCmd(@"ping 192.168.1.1");
-            MessageBox.Show(strCmdReturn);
-            if (strCmdReturn.Contains(strNew_keyword))
-            {
-                sVersionNo = strCmdReturn.Substring(strNew_keyword.Length, 6);
-            }
-            return sVersionNo;
-        }
+//         private void addNewReviewFile(string strReviewId)
+//         {
+//             List<string> strFileList = new List<string>();
+//             List<string> m_pFileFullPaths = new List<string>();
+//             getClearCaseFilePath(ref strFileList);
+//             getNewReviewFilePath(strReviewId, strFileList, ref m_pFileFullPaths);
+//             List<DisplayData> m_pDisplayData = new List<DisplayData>();
+// 
+//             foreach (string strTemp in m_pFileFullPaths)
+//             {
+//                 DisplayData temp = new DisplayData();
+//                 temp.strFileConvertSuccess = "Fail";
+//                 temp.strFileConvertSuccess = runCmd(strTemp);
+//                 m_pDisplayData.Add(temp);
+//             }
+//             displayDataFalseOrSuccess(m_pDisplayData);
+//         }
+// 
+//         private void getColobaratorFilePath(string strReviewId, List<string> strFileList)
+//         {
+//             List<DisplayData> m_pFileFullPaths = new List<DisplayData>();
+//             bool bFistInsert = true;
+//             string strReviewIdTemp = strReviewId;
+//             foreach (string strTemp in strFileList)
+//             {
+//                 int nCheckinWordPos = strTemp.IndexOf(strCheckIn_keyword,0);
+//                 string strFilePathOld = strTemp.Substring(25,nCheckinWordPos-25);
+//                 int nFileVerInClearCasePos = strFilePathOld.LastIndexOf(@"\");
+//                 string strFileVerInClearCase = strFilePathOld.Substring(nFileVerInClearCasePos + 1);
+//                 int nFileVerOld = int.Parse(strFileVerInClearCase);
+//                 int nFileVerNew = nFileVerOld + 1;
+// 
+//                 strFilePathOld = strFilePathOld.Replace(@" \main\int_", @"@@\main\int_");
+//                 strFilePathOld = ClearCase_MapPath.Text + strFilePathOld;
+//                 //strFilePathOld = @"Z:\" + strFilePathOld;
+// 
+//                 string strFilePathNew = strFilePathOld;
+//                 nFileVerInClearCasePos = strFilePathNew.LastIndexOf(@"\");
+//                 strFilePathNew = strFilePathNew.Remove(nFileVerInClearCasePos+1);
+//                 strFilePathNew = strFilePathNew + Convert.ToString(nFileVerNew);
+// 
+//                 string strFileFormatAll;
+//                 bFistInsert = false;
+// 
+//                 DisplayData temp = new DisplayData();
+//                 
+//                 temp.strFileConvertSuccess = "Fail";
+// 
+//                 if (bFistInsert)
+//                 {
+//                     strFileFormatAll = strCollobarate_new_cmd +
+//                     @"  " + "\"" +
+//                     strFilePathNew + "\"" + "\"" +
+//                     strFilePathOld + "\"";
+// 
+//                     temp.FilePath = strFileFormatAll;
+//                     temp.strFileConvertSuccess = runNewCmd(strFileFormatAll, ref strReviewIdTemp);
+//                 }
+//                 else
+//                 {
+//                     strFileFormatAll = @"ccollab addversions " +
+//                     strReviewId + @"  " + "\"" +
+//                     strFilePathNew + "\"" + "\"" +
+//                     strFilePathOld + "\"";
+// 
+//                     temp.FilePath = strFileFormatAll;
+//                     temp.strFileConvertSuccess = runCmd(strFileFormatAll);
+//                 }
+// 
+//                 //@"ccollab addversions ";
+//                 m_pFileFullPaths.Add(temp);
+//             }
+//             displayDataFalseOrSuccess(m_pFileFullPaths);
+//         }
+// 
+//         private string getVersionNo()
+//         {
+//             string sVersionNo = "";
+//             Cmd c = new Cmd();
+//             string strCmdReturn = c.RunCmd(strCollobarate_new_cmd);
+//             //string strCmdReturn = c.RunCmd(@"ping 192.168.1.1");
+//             MessageBox.Show(strCmdReturn);
+//             if (strCmdReturn.Contains(strNew_keyword))
+//             {
+//                 sVersionNo = strCmdReturn.Substring(strNew_keyword.Length, 6);
+//             }
+//             return sVersionNo;
+//         }
 
         private string runCmd(string strCmd)
         {
