@@ -148,7 +148,9 @@ namespace Collobrator_update
 
                     if (strCmdReturn.Contains(strNew_keyword))
                     {
-                        strNewReviewId = strCmdReturn.Substring(strNew_keyword.Length, 6);
+                        int nIndex = strCmdReturn.IndexOf(strNew_keyword) + strNew_keyword.Length;
+                        
+                        strNewReviewId = strCmdReturn.Substring(nIndex, 6);
                     }
                 }
                 
@@ -299,6 +301,26 @@ namespace Collobrator_update
 //             }
 //             return sVersionNo;
 //         }
+//         private string runNewCmd(string strCmd, ref string strVerionId)
+//         {
+//             Cmd c = new Cmd();
+//             string strCmdReturn = c.RunCmd(strCmd);
+//             if (strCmdReturn.Contains(@"successful"))
+//             {
+//                 MessageBox.Show(strCmdReturn);
+//             }
+//             else
+//             {
+//                 return @"Fail";
+//             }
+// 
+//             if (strCmdReturn.Contains(strNew_keyword))
+//             {
+//                 strVerionId = strCmdReturn.Substring(strNew_keyword.Length, 6);
+//             }
+// 
+//             return @"Success";
+//         }
 
         private string runCmd(string strCmd)
         {
@@ -312,26 +334,7 @@ namespace Collobrator_update
             return @"Success";
         }
 
-        private string runNewCmd(string strCmd, ref string strVerionId)
-        {
-            Cmd c = new Cmd();
-            string strCmdReturn = c.RunCmd(strCmd);
-            if (strCmdReturn.Contains(@"successful"))
-            {
-                MessageBox.Show(strCmdReturn);
-            }
-            else
-            {
-                return @"Fail";
-            }
 
-            if (strCmdReturn.Contains(strNew_keyword))
-            {
-                strVerionId = strCmdReturn.Substring(strNew_keyword.Length, 6);
-            }
-
-            return @"Success";
-        }
 
         private void displayDataFalseOrSuccess(List<DisplayData> strCollobarateFileFormat)
         {
