@@ -29,7 +29,6 @@
         private void InitializeComponent()
         {
             this.button1 = new System.Windows.Forms.Button();
-            this.folderBrowserDialog1 = new System.Windows.Forms.FolderBrowserDialog();
             this.radio_NewReview = new System.Windows.Forms.RadioButton();
             this.radio_OldReview = new System.Windows.Forms.RadioButton();
             this.groupBox1 = new System.Windows.Forms.GroupBox();
@@ -40,6 +39,8 @@
             this.label2 = new System.Windows.Forms.Label();
             this.ClearCase_ReviewID = new System.Windows.Forms.TextBox();
             this.ClearCase_ReviewID_label = new System.Windows.Forms.Label();
+            this.seletFile = new System.Windows.Forms.Button();
+            this.CcCommitFileDlg = new System.Windows.Forms.OpenFileDialog();
             this.groupBox1.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.dataGridView1)).BeginInit();
             this.SuspendLayout();
@@ -103,7 +104,7 @@
             // 
             this.ClearCaseFilePath.Location = new System.Drawing.Point(143, 69);
             this.ClearCaseFilePath.Name = "ClearCaseFilePath";
-            this.ClearCaseFilePath.Size = new System.Drawing.Size(554, 21);
+            this.ClearCaseFilePath.Size = new System.Drawing.Size(474, 21);
             this.ClearCaseFilePath.TabIndex = 4;
             // 
             // dataGridView1
@@ -152,11 +153,26 @@
             this.ClearCase_ReviewID_label.TabIndex = 9;
             this.ClearCase_ReviewID_label.Text = "ClearCase_ReviewId";
             // 
+            // seletFile
+            // 
+            this.seletFile.Location = new System.Drawing.Point(623, 68);
+            this.seletFile.Name = "seletFile";
+            this.seletFile.Size = new System.Drawing.Size(73, 21);
+            this.seletFile.TabIndex = 11;
+            this.seletFile.Text = "...";
+            this.seletFile.UseVisualStyleBackColor = true;
+            this.seletFile.Click += new System.EventHandler(this.seletFile_Click);
+            // 
+            // CcCommitFileDlg
+            // 
+            this.CcCommitFileDlg.FileName = "Clear Case Commit File Dialog";
+            // 
             // Form1
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 12F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(709, 391);
+            this.Controls.Add(this.seletFile);
             this.Controls.Add(this.ClearCase_ReviewID);
             this.Controls.Add(this.ClearCase_ReviewID_label);
             this.Controls.Add(this.ClearCase_MapPath);
@@ -180,7 +196,6 @@
         #endregion
 
         private System.Windows.Forms.Button button1;
-        private System.Windows.Forms.FolderBrowserDialog folderBrowserDialog1;
         private System.Windows.Forms.RadioButton radio_NewReview;
         private System.Windows.Forms.RadioButton radio_OldReview;
         private System.Windows.Forms.GroupBox groupBox1;
@@ -191,6 +206,8 @@
         private System.Windows.Forms.Label label2;
         private System.Windows.Forms.TextBox ClearCase_ReviewID;
         private System.Windows.Forms.Label ClearCase_ReviewID_label;
+        private System.Windows.Forms.Button seletFile;
+        private System.Windows.Forms.OpenFileDialog CcCommitFileDlg;
     }
 }
 

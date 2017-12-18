@@ -9,6 +9,7 @@ using System.Threading.Tasks;
 using System.Windows.Forms;
 using System.IO;
 using System.Diagnostics;
+using Microsoft.Win32;
 
 namespace Collobrator_update
 {
@@ -35,6 +36,26 @@ namespace Collobrator_update
         private void Form1_Load(object sender, EventArgs e)
         {
             controlShowOrHide(false);
+            getClearCaseMap();
+        }
+
+        private void getClearCaseMap()
+        {
+            //HKCU\SOFTWARE\Microsoft\Windows\CurrentVersion\Explorer\MountPoints2
+            string strMapName;
+            RegistryHelper rh = new RegistryHelper();
+            strMapName = rh.GetRegistryData(Registry.LocalMachine,
+                            @"\SOFTWARE\Microsoft\Windows\CurrentVersion\Explorer\MountPoints2", 
+                            @"ClearCase");
+            if (strMapName.Length == 0)
+            {
+                ClearCase_MapPath.Text = @"Z:";
+            }
+            else
+            {
+                ClearCase_MapPath.Text = strMapName;
+            }
+            
         }
 
         private void button1_Click(object sender, EventArgs e)
@@ -386,6 +407,13 @@ namespace Collobrator_update
                     e.KeyChar = (char)0;   //处理非法字符
                 }
             }
+        }
+
+        private void seletFile_Click(object sender, EventArgs e)
+        {
+            CcCommitFileDlg.ShowDialog();
+            ClearCaseFilePath.Text = CcCommitFileDlg.FileName;
+            
         }
 
     }
