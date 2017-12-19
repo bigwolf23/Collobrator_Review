@@ -19,20 +19,18 @@ namespace Collobrator_update
         {
             InitializeComponent();
         }
-        public class DisplayData
-        {
-            public string FilePath { get; set; }
-            public string strFileConvertSuccess { get; set; }
-            public string strDecription { get; set; }
-        }
-
-
         
+
+        public void setLogInfo(string strLogInfo)
+        {
+            Log_info_Edit.AppendText(strLogInfo);
+        }
 
         private void Form1_Load(object sender, EventArgs e)
         {
-            controlShowOrHide(false);
+            controlShowOrHide(true);
             getClearCaseMap();
+            
         }
 
         private void getClearCaseMap()
@@ -42,11 +40,12 @@ namespace Collobrator_update
             string strMapName;
             RegistryHelper rh = new RegistryHelper();
             strMapName = rh.GetRegistryData(Registry.LocalMachine,
-                            @"\SOFTWARE\Microsoft\Windows\CurrentVersion\Explorer\MountPoints2", 
-                            @"ClearCase");
+                            @"\SOFTWARE\Microsoft\SMS\CurrentUser",
+                            @"UserSID");
+
             if (strMapName.Length == 0)
             {
-                ClearCase_MapPath.Text = @"Z:";
+                ClearCase_MapPath.Text = @"Z:\";
             }
             else
             {
@@ -58,13 +57,17 @@ namespace Collobrator_update
         private void updateReviewFile(string strReviewId)
         {
             List<string> strFileList = new List<string>();
-            List<string> m_pFileFullPaths = new List<string>();
+            List<DisplayData> m_pFileFullPaths = new List<DisplayData>();
             bool bReturn = false;
+            DelegateMsgInfo delegateMethod = new DelegateMsgInfo();
+            delegateMethod.AppendCmdInfo = setLogInfo;
+
             GetCc_Command Cc_command = new GetCc_Command();
+            Cc_command.AppendMsg = delegateMethod;
             Cc_command.strCcFilePath = ClearCaseFilePath.Text;
             Cc_command.strCcMapPath = ClearCase_MapPath.Text;
             Cc_command.getClearCaseFilePath(ref strFileList);
-            if (strReviewId.Length == 6)
+            if (strReviewId.Length == 6 && radio_NewReview.Checked == false)
             {
                 bReturn = Cc_command.getOldReviewFilePath(strReviewId, strFileList, ref m_pFileFullPaths);
             }
@@ -75,27 +78,15 @@ namespace Collobrator_update
 
             if (bReturn)
             {
-                loadDisplayData(Cc_command,m_pFileFullPaths);
+                displayDataFalseOrSuccess(m_pFileFullPaths);
             }
             
         }
 
-        private void loadDisplayData(GetCc_Command Cc_command,List<string> pFileFullPaths)
-        {
-            List<DisplayData> pDisplayData = new List<DisplayData>();
-
-            foreach (string strTemp in pFileFullPaths)
-            {
-                DisplayData temp = new DisplayData();
-                temp.strFileConvertSuccess = "Fail";
-                temp.strFileConvertSuccess = Cc_command.runCmd(strTemp);
-                pDisplayData.Add(temp);
-            }
-            displayDataFalseOrSuccess(pDisplayData);
-        }
-
         private void button1_Click(object sender, EventArgs e)
         {
+            Log_info_Edit.Clear();
+            
             if (ClearCase_MapPath.Text.Length == 0)
             {
                 MessageBox.Show(@"Please input ClearCase_MapPath!!!");

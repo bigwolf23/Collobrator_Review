@@ -11,7 +11,7 @@ using System.IO;
 using System.Diagnostics;
 using System.Threading;
 
-namespace Collobrator_update
+namespace DelegateMethod
 {
     /// <summary>
     /// Cmd 的摘要说明。
@@ -20,14 +20,14 @@ namespace Collobrator_update
     public class Cmd
     {
         private Process proc = null;
-        private DelegateMsgInfo AppendMsg;
+ //       private DelegateMsgInfo AppendMsg;
         /// <summary>
         /// 构造方法
         /// </summary>
-        public Cmd(DelegateMsgInfo AppendMsgHandler)
+        public Cmd(/*DelegateMsgInfo AppendMsgHandler*/)
         {
             proc = new Process();
-            AppendMsg = AppendMsgHandler;
+            /*AppendMsg = AppendMsgHandler;*/
         }
 
       
@@ -43,7 +43,7 @@ namespace Collobrator_update
         public string RunCmd(string cmd)
         {
             proc.StartInfo.FileName = "cmd.exe";
-//            proc.StartInfo.Arguments = cmd;
+            proc.StartInfo.Arguments = cmd;
 
             proc.StartInfo.CreateNoWindow = false;
             proc.StartInfo.UseShellExecute = false;

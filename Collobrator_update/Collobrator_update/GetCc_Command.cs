@@ -8,6 +8,18 @@ using System.IO;
 
 namespace Collobrator_update
 {
+    public class DelegateMsgInfo
+    {
+        public delegate void addCmdInfo(string strMsg);
+        public addCmdInfo AppendCmdInfo;
+    }
+    public class DisplayData
+    {
+        public string FilePath { get; set; }
+        public string strFileConvertSuccess { get; set; }
+        public string strDecription { get; set; }
+    }
+
     public class GetCc_Command
     {
         public static string strCollobarate_new_cmd = "ccollab addversions new";
@@ -15,6 +27,8 @@ namespace Collobrator_update
         public static string strNew_keyword = "New review created: Review #";
         public static string strCheckIn_keyword = "CHECKEDIN";
         public static string strCheckOut_keyword = "CheckedOut:";
+
+        public DelegateMsgInfo AppendMsg;
 
         public string strCcFilePath { get; set; }
         public string strCcMapPath{ get; set; }
@@ -49,7 +63,7 @@ namespace Collobrator_update
 
 
 
-        public bool getNewReviewFilePath(string strReviewId, List<string> strFileList, ref List<string> FileFullPaths)
+        public bool getNewReviewFilePath(string strReviewId, List<string> strFileList, ref List<DisplayData> FileFullPaths)
         {
             string strFileFormatAll;
             string strNewReviewId = strReviewId;
@@ -63,15 +77,15 @@ namespace Collobrator_update
 
                 strFileFormatAll = @"ccollab addversions " +
                     strNewReviewId + @"  " + "\"" +
-                    strNewPath + "\"" + "\"" +
+                    strNewPath + "\"" + @"  " + "\"" +
                     strOldPath + "\"";
                 if (bFirstCmd)
                 {
-                    Cmd c = new Cmd();
-                    string strCmdReturn = c.RunCmd(strFileFormatAll);
+                    Cmd c = new Cmd(AppendMsg);
+                    string strCmdReturn = c.RunNewCmd(strFileFormatAll);
                     if (strCmdReturn.Contains(@"successful"))
                     {
-                        MessageBox.Show(strCmdReturn);
+                        AppendMsg.AppendCmdInfo(strCmdReturn);
                     }
                     else
                     {
@@ -89,14 +103,13 @@ namespace Collobrator_update
 
                 bFirstCmd = false;
 
-                //@"ccollab addversions ";
-                FileFullPaths.Add(strFileFormatAll);
+                addNewDispData(true,strFileFormatAll, ref FileFullPaths);
 
             }
             return true;
         }
 
-        public bool getOldReviewFilePath(string strReviewId, List<string> strFileList, ref List<string> FileFullPaths)
+        public bool getOldReviewFilePath(string strReviewId, List<string> strFileList, ref List<DisplayData> FileFullPaths)
         {
             foreach (string strTemp in strFileList)
             {
@@ -107,23 +120,33 @@ namespace Collobrator_update
 
                 strFileFormatAll = @"ccollab addversions " +
                     strReviewId + @"  " + "\"" +
-                    strNewPath + "\"" + "\"" +
+                    strNewPath + "\"" + @"  " + "\"" +
                     strOldPath + "\"";
 
-                //@"ccollab addversions ";
-                FileFullPaths.Add(strFileFormatAll);
+                addNewDispData(false ,strFileFormatAll,ref FileFullPaths);
             }
             return true;
+        }
+
+        public void addNewDispData(bool bNewReview,string strCmd,ref List<DisplayData> FileFullPaths)
+        {
+            DisplayData temp = new DisplayData();
+            temp.FilePath = strCmd;
+            temp.strFileConvertSuccess = "Fail";
+            if (bNewReview == false)
+            {
+                temp.strFileConvertSuccess = runCmd(strCmd);
+            }
+  
+            //@"ccollab addversions ";
+            FileFullPaths.Add(temp);
         }
 
         public void getFilePathByClearCaseResult(string strResult, out string strNewPath, out string strOldPath)
         {
             int nCheckinWordPos = strResult.IndexOf(strCheckIn_keyword, 0);
             string strFilePathOld = strResult.Substring(25, nCheckinWordPos - 25);
-            int nFileVerInClearCasePos = strFilePathOld.LastIndexOf(@"\");
-            string strFileVerInClearCase = strFilePathOld.Substring(nFileVerInClearCasePos + 1);
-            int nFileVerOld = int.Parse(strFileVerInClearCase);
-            int nFileVerNew = nFileVerOld + 1;
+            
 
             if (strFilePathOld.Contains(@" \main\int_"))
             {
@@ -131,8 +154,15 @@ namespace Collobrator_update
             }
             else
             {
-                strFilePathOld = strFilePathOld.Replace(@" \main\1", @"@@\main\int_10.00.00_dae\0");
+                int nPos = strFilePathOld.LastIndexOf(@"\main\");
+                strFilePathOld = strFilePathOld.Remove(nPos - 1);
+                strFilePathOld = strFilePathOld + @"@@\main\int_10.00.00_dae\0";
             }
+
+            int nFileVerInClearCasePos = strFilePathOld.LastIndexOf(@"\");
+            string strFileVerInClearCase = strFilePathOld.Substring(nFileVerInClearCasePos + 1);
+            int nFileVerOld = int.Parse(strFileVerInClearCase);
+            int nFileVerNew = nFileVerOld + 1;
 
             strFilePathOld = strCcMapPath + strFilePathOld;
             //strFilePathOld = @"Z:\" + strFilePathOld;
@@ -146,13 +176,14 @@ namespace Collobrator_update
             strOldPath = strFilePathOld;
         }
 
+        
         public string runCmd(string strCmd)
         {
-            Cmd c = new Cmd();
+            Cmd c = new Cmd(AppendMsg);
             string strCmdReturn = c.RunCmd(strCmd);
             if (strCmdReturn.Contains(@"successful"))
             {
-                MessageBox.Show(strCmdReturn);
+                AppendMsg.AppendCmdInfo(strCmdReturn);
             }
 
             return @"Success";
