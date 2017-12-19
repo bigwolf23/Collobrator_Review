@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using System.Threading;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 using System.IO;
@@ -135,7 +136,8 @@ namespace Collobrator_update
             temp.strFileConvertSuccess = "Fail";
             if (bNewReview == false)
             {
-                temp.strFileConvertSuccess = runCmd(strCmd);
+                //temp.strFileConvertSuccess = runCmdThread(strCmd);
+                runCmdThread(strCmd);
             }
   
             //@"ccollab addversions ";
@@ -176,7 +178,17 @@ namespace Collobrator_update
             strOldPath = strFilePathOld;
         }
 
-        
+        public void runCmdThread(string strCmd)
+        {
+            Thread parameterThread = new Thread(threadStart);
+            parameterThread.Start(strCmd);
+        }
+        public void threadStart(object sender)
+        {
+            string strCmd = sender.ToString();
+            runCmd(strCmd);
+        }
+
         public string runCmd(string strCmd)
         {
             Cmd c = new Cmd(AppendMsg);

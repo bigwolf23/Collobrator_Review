@@ -33,12 +33,6 @@ namespace DelegateMethod
             ReadErrOutput += new DelReadErrOutput(ReadErrOutputAction);
         }
 
-        private void button1_Click(object sender, EventArgs e)
-        {
-            // 启动进程执行相应命令,此例中以执行ping.exe为例  
-            RealAction("ping.exe", textBox1.Text);
-        }
-
         private void RealAction(string StartFileName, string StartFileArg)
         {
             Process CmdProcess = new Process();
@@ -96,6 +90,12 @@ namespace DelegateMethod
         private void CmdProcess_Exited(object sender, EventArgs e)
         {
             // 执行结束后触发  
+        }
+
+        private void button1_Click_1(object sender, EventArgs e)
+        {
+            // 启动进程执行相应命令,此例中以执行ping.exe为例  
+            RealAction("ping.exe", @"192.168.1.1");
         }
     }  
 }

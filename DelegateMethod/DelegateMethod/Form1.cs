@@ -7,6 +7,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
+using System.Threading;
 
 namespace DelegateMethod
 {
@@ -40,13 +41,29 @@ namespace DelegateMethod
         {
             MessageBox.Show(a);
         }
+        public void threadStart(object sender)
+        {
+            string cmd = sender.ToString();
+            Cmd c = new Cmd();
+            c.RunTestCmd(cmd);
+            MessageBox.Show(@"over");
+        }
+        //public delegate void ParameterizedThreadStart();
         private void button1_Click(object sender, EventArgs e)
         {
-            string strcmd = @"ccollab addversions 115882  "+"\""+
-    @"Z:\\FTView_SE\\SLHMI\\Logging\\RsAlarmLogEd\\RsAlarmLogEd.vcxproj@@\\main\\int_10.00.00_dae\\2\" +"\"" + "\"" +
-    @"Z:\\FTView_SE\\SLHMI\\Logging\\RsAlarmLogEd\\RsAlarmLogEd.vcxproj@@\\main\\int_10.00.00_dae\\1 " + "\"";
-            Cmd c = new Cmd();
-            string strCmdReturn = c.RunCmd(strcmd);
+
+            Thread parameterThread = new Thread(threadStart);
+            parameterThread.Name = @"command thread";
+            parameterThread.Start(@"Demo.exe");
+
+
+            //             string strcmd = @"ccollab addversions 115882  "+"\""+
+            //                             @"Z:\\FTView_SE\\SLHMI\\Logging\\RsAlarmLogEd\\RsAlarmLogEd.vcxproj@@\\main\\int_10.00.00_dae\\2\" +"\"" + "\"" +
+            //                             @"Z:\\FTView_SE\\SLHMI\\Logging\\RsAlarmLogEd\\RsAlarmLogEd.vcxproj@@\\main\\int_10.00.00_dae\\1 " + "\"";
+
+            //string strCmdReturn = c.RunCmd(@"help");
+            //c.runcmdwithWindow(@"help");
+            
 
             //             delegateClass dl = new delegateClass();
 //             dl.AppendCmdInfo = otherclassMethod;

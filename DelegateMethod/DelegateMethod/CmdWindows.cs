@@ -16,7 +16,7 @@ namespace DelegateMethod
     /// <summary>
     /// Cmd 的摘要说明。
     /// </summary>
-
+    
     public class Cmd
     {
         private Process proc = null;
@@ -27,9 +27,19 @@ namespace DelegateMethod
         public Cmd(/*DelegateMsgInfo AppendMsgHandler*/)
         {
             proc = new Process();
+
+            
             /*AppendMsg = AppendMsgHandler;*/
         }
 
+        public void runcmdwithWindow(string strCmd)
+        {
+            //指定启动进程是调用的应用程序和命令行参数  
+            ProcessStartInfo psi = new ProcessStartInfo("cmd.exe", strCmd);
+            proc.StartInfo = psi;
+            proc.Start();
+            proc.WaitForExit();
+        }
       
 
         private void cmd_exited(object sender, EventArgs e)
@@ -42,7 +52,7 @@ namespace DelegateMethod
         /// <param name="cmd">要执行的CMD命令</param>
         public string RunCmd(string cmd)
         {
-            proc.StartInfo.FileName = "cmd.exe";
+            proc.StartInfo.FileName = "Demo.exe";
             proc.StartInfo.Arguments = cmd;
 
             proc.StartInfo.CreateNoWindow = false;
@@ -72,6 +82,38 @@ namespace DelegateMethod
 
             
             return outStr;
+        }
+
+        public void RunTestCmd(string cmdExe)
+        {
+            proc.StartInfo.FileName = cmdExe;
+            //proc.StartInfo.Arguments = (string)cmd;
+
+            proc.StartInfo.CreateNoWindow = false;
+            proc.StartInfo.UseShellExecute = false;
+            proc.StartInfo.RedirectStandardError = true;
+            proc.StartInfo.RedirectStandardInput = true;
+            proc.StartInfo.RedirectStandardOutput = true;
+
+            //proc.OutputDataReceived += new DataReceivedEventHandler(p_outPutReceived);
+
+            proc.EnableRaisingEvents = true;
+            proc.Exited += new EventHandler(cmd_exited);
+            proc.Start();
+            //            proc.BeginOutputReadLine();
+
+//             proc.StandardInput.WriteLine(cmd);
+//             proc.StandardInput.WriteLine("exit");
+
+
+            //string outStrLine = proc.StandardOutput.ReadLine();
+
+            //Console.WriteLine(outStrLine);
+            string outStr = proc.StandardOutput.ReadToEnd();
+            //          string outStr = "Successfully";
+
+            proc.Close();
+
         }
 
         public string RunNewCmd(string cmd)
