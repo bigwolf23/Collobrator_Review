@@ -21,6 +21,7 @@ namespace Collobrator_update
     {
         private Process proc = null;
         private DelegateMsgInfo AppendMsg;
+
         /// <summary>
         /// 构造方法
         /// </summary>
@@ -45,31 +46,21 @@ namespace Collobrator_update
             proc.StartInfo.FileName = "cmd.exe";
 //            proc.StartInfo.Arguments = cmd;
 
-            proc.StartInfo.CreateNoWindow = false;
+            proc.StartInfo.CreateNoWindow = true;
             proc.StartInfo.UseShellExecute = false;
             proc.StartInfo.RedirectStandardError = true;
             proc.StartInfo.RedirectStandardInput = true;
             proc.StartInfo.RedirectStandardOutput = true;
 
-            //proc.OutputDataReceived += new DataReceivedEventHandler(p_outPutReceived);
-
-            proc.EnableRaisingEvents = true;
-            proc.Exited += new EventHandler(cmd_exited);
             proc.Start();
-//            proc.BeginOutputReadLine();
 
             proc.StandardInput.WriteLine(cmd);
             proc.StandardInput.WriteLine("exit");
-            
-            
-            //string outStrLine = proc.StandardOutput.ReadLine();
-
-            //Console.WriteLine(outStrLine);
+ 
             string outStr = proc.StandardOutput.ReadToEnd();
-            //          string outStr = "Successfully";
             
             proc.Close();
-
+            
             
             return outStr;
         }
@@ -77,31 +68,20 @@ namespace Collobrator_update
         public string RunNewCmd(string cmd)
         {
             proc.StartInfo.FileName = "cmd.exe";
-            //            proc.StartInfo.Arguments = cmd;
-
             proc.StartInfo.CreateNoWindow = true;
             proc.StartInfo.UseShellExecute = false;
             proc.StartInfo.RedirectStandardError = true;
             proc.StartInfo.RedirectStandardInput = true;
             proc.StartInfo.RedirectStandardOutput = true;
 
-            //proc.OutputDataReceived += new DataReceivedEventHandler(p_outPutReceived);
-
             proc.EnableRaisingEvents = true;
             proc.Exited += new EventHandler(cmd_exited);
             proc.Start();
-            //            proc.BeginOutputReadLine();
-
             proc.StandardInput.WriteLine(cmd);
             proc.StandardInput.WriteLine("exit");
 
-
-            //string outStrLine = proc.StandardOutput.ReadLine();
-
-            //Console.WriteLine(outStrLine);
             string outStr = proc.StandardOutput.ReadToEnd();
-            //          string outStr = "Successfully";
-
+  
             proc.Close();
 
 

@@ -10,6 +10,7 @@ using System.Windows.Forms;
 using System.IO;
 using System.Diagnostics;
 using Microsoft.Win32;
+using System.Threading;
 
 namespace Collobrator_update
 {
@@ -28,10 +29,13 @@ namespace Collobrator_update
 
         private void Form1_Load(object sender, EventArgs e)
         {
+            Control.CheckForIllegalCrossThreadCalls = false;
             controlShowOrHide(true);
             getClearCaseMap();
             
         }
+
+
 
         private void getClearCaseMap()
         {
@@ -54,8 +58,9 @@ namespace Collobrator_update
             
         }
 
-        private void updateReviewFile(string strReviewId)
+        private void threadProc(object sender)
         {
+            string strReviewId = sender.ToString();
             List<string> strFileList = new List<string>();
             List<DisplayData> m_pFileFullPaths = new List<DisplayData>();
             bool bReturn = false;
@@ -80,7 +85,14 @@ namespace Collobrator_update
             {
                 displayDataFalseOrSuccess(m_pFileFullPaths);
             }
-            
+        }
+
+        private void updateReviewFile(string strReviewId)
+        {
+            Thread thr = new Thread(threadProc);
+            thr.IsBackground = true;
+            thr.Start(strReviewId);
+       
         }
 
         private void button1_Click(object sender, EventArgs e)

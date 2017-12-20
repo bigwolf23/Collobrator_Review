@@ -136,8 +136,7 @@ namespace Collobrator_update
             temp.strFileConvertSuccess = "Fail";
             if (bNewReview == false)
             {
-                //temp.strFileConvertSuccess = runCmdThread(strCmd);
-                runCmdThread(strCmd);
+                temp.strFileConvertSuccess = runCmd(strCmd);
             }
   
             //@"ccollab addversions ";
@@ -176,17 +175,6 @@ namespace Collobrator_update
 
             strNewPath = strFilePathNew;
             strOldPath = strFilePathOld;
-        }
-
-        public void runCmdThread(string strCmd)
-        {
-            Thread parameterThread = new Thread(threadStart);
-            parameterThread.Start(strCmd);
-        }
-        public void threadStart(object sender)
-        {
-            string strCmd = sender.ToString();
-            runCmd(strCmd);
         }
 
         public string runCmd(string strCmd)
