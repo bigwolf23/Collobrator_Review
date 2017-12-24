@@ -45,6 +45,7 @@ namespace Collobrator_update
         {
             proc.StartInfo.FileName = "cmd.exe";
 //            proc.StartInfo.Arguments = cmd;
+//            proc.StartInfo.FileName = "Demo.exe";
 
             proc.StartInfo.CreateNoWindow = true;
             proc.StartInfo.UseShellExecute = false;

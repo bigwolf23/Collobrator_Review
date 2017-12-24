@@ -60,6 +60,7 @@ namespace Collobrator_update
 
         private void threadProc(object sender)
         {
+            allControlEnable(false);
             string strReviewId = sender.ToString();
             List<string> strFileList = new List<string>();
             List<DisplayData> m_pFileFullPaths = new List<DisplayData>();
@@ -84,8 +85,12 @@ namespace Collobrator_update
             if (bReturn)
             {
                 displayDataFalseOrSuccess(m_pFileFullPaths);
+                MessageBox.Show(@"Complete");
             }
+            allControlEnable(true);
         }
+
+
 
         private void updateReviewFile(string strReviewId)
         {
@@ -122,9 +127,17 @@ namespace Collobrator_update
             }
         }
 
-        
 
-
+        private void allControlEnable(bool bEnable)
+        {
+            radio_NewReview.Enabled = bEnable;
+            radio_OldReview.Enabled = bEnable;
+            ClearCase_MapPath.Enabled = bEnable;
+            ClearCase_ReviewID.Enabled = bEnable;
+            ClearCaseFilePath.Enabled = bEnable;
+            seletFile.Enabled = bEnable;
+            button_update.Enabled = bEnable;
+        }
 
         private void displayDataFalseOrSuccess(List<DisplayData> strCollobarateFileFormat)
         {

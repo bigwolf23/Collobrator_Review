@@ -184,9 +184,10 @@ namespace Collobrator_update
             if (strCmdReturn.Contains(@"successful"))
             {
                 AppendMsg.AppendCmdInfo(strCmdReturn);
+                return @"Success";
             }
 
-            return @"Success";
+            return @"Fail";
         }
     }
 }
