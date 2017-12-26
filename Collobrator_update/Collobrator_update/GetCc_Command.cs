@@ -29,6 +29,10 @@ namespace Collobrator_update
         public static string strCheckIn_keyword = "CHECKEDIN";
         public static string strCheckOut_keyword = "CheckedOut:";
 
+        public static string strSuccess_Flg = @"successful";
+        public static string strSuccess_Return = @"Success";
+        public static string strFail_Return = @"Fail";
+
         public DelegateMsgInfo AppendMsg;
 
         public string strCcFilePath { get; set; }
@@ -44,6 +48,15 @@ namespace Collobrator_update
             }
         }
 
+        private bool isHaveCheckOutInKeyWord(string strLine)
+        {
+            if (strLine.Contains(strCheckOut_keyword) && strLine.Contains(strCheckIn_keyword))
+            {
+                return true;
+            }
+            return false;
+        }
+
         public void getClearCaseFileList(string ClearcaseFilePath, ref List<string> strFileList)
         {
             FileStream fs = new FileStream(ClearcaseFilePath, FileMode.Open, FileAccess.Read);
@@ -52,7 +65,7 @@ namespace Collobrator_update
             while (sr.Peek() >= 0)
             {
                 string strLine = sr.ReadLine();
-                if (strLine.Contains(strCheckOut_keyword) && strLine.Contains(strCheckIn_keyword))
+                if (isHaveCheckOutInKeyWord(strLine))
                 {
                     strFileList.Add(strLine);
                 }
@@ -61,86 +74,120 @@ namespace Collobrator_update
             fs.Close();
         }
 
+        public void getReviewID(string strCmdReturn, ref string strNewReviewId)
+        {
+            if (strCmdReturn.Contains(strNew_keyword))
+            {
+                int nIndex = strCmdReturn.IndexOf(strNew_keyword) + strNew_keyword.Length;
 
+                strNewReviewId = strCmdReturn.Substring(nIndex, 6);
+            }
+        }
 
+        public void getCommandLine(string strInput,string strReviewId,out string strFileFormatAll)
+        {
+            string strNewPath;
+            string strOldPath;
+
+            getFilePathByClearCaseResult(strInput, out strNewPath, out strOldPath);
+
+            strFileFormatAll = @"ccollab addversions " +
+                strReviewId + @"  " + "\"" +
+                strNewPath + "\"" + @"  " + "\"" +
+                strOldPath + "\"";
+        }
 
         public bool getNewReviewFilePath(string strReviewId, List<string> strFileList, ref List<DisplayData> FileFullPaths)
         {
-            string strFileFormatAll;
             string strNewReviewId = strReviewId;
             bool bFirstCmd = true;
             foreach (string strTemp in strFileList)
             {
-                string strNewPath;
-                string strOldPath;
+                string strFileFormatAll;
+                string strCmdReturn = @"";
 
-                getFilePathByClearCaseResult(strTemp, out strNewPath, out strOldPath);
-
-                strFileFormatAll = @"ccollab addversions " +
-                    strNewReviewId + @"  " + "\"" +
-                    strNewPath + "\"" + @"  " + "\"" +
-                    strOldPath + "\"";
+                getCommandLine(strTemp, strNewReviewId, out strFileFormatAll);
                 if (bFirstCmd)
                 {
-                    Cmd c = new Cmd(AppendMsg);
-                    string strCmdReturn = c.RunNewCmd(strFileFormatAll);
-                    if (strCmdReturn.Contains(@"successful"))
-                    {
-                        AppendMsg.AppendCmdInfo(strCmdReturn);
-                    }
-                    else
-                    {
-                        return false;
-                    }
-
-
-                    if (strCmdReturn.Contains(strNew_keyword))
-                    {
-                        int nIndex = strCmdReturn.IndexOf(strNew_keyword) + strNew_keyword.Length;
-
-                        strNewReviewId = strCmdReturn.Substring(nIndex, 6);
-                    }
+                    strCmdReturn = runCmd(strFileFormatAll);
+                    getReviewID(strCmdReturn, ref strNewReviewId);
                 }
 
-                bFirstCmd = false;
+                if (false == addNewDispData(bFirstCmd, strCmdReturn, strFileFormatAll, ref FileFullPaths))
+                {
+                    break;
+                }
 
-                addNewDispData(true,strFileFormatAll, ref FileFullPaths);
+                // if the new process ,this will set false.
+                bFirstCmd = false;
 
             }
             return true;
         }
+
 
         public bool getOldReviewFilePath(string strReviewId, List<string> strFileList, ref List<DisplayData> FileFullPaths)
         {
             foreach (string strTemp in strFileList)
             {
-                string strNewPath;
-                string strOldPath;
                 string strFileFormatAll;
-                getFilePathByClearCaseResult(strTemp, out strNewPath, out strOldPath);
 
-                strFileFormatAll = @"ccollab addversions " +
-                    strReviewId + @"  " + "\"" +
-                    strNewPath + "\"" + @"  " + "\"" +
-                    strOldPath + "\"";
+                getCommandLine(strTemp, strReviewId, out strFileFormatAll);
 
-                addNewDispData(false ,strFileFormatAll,ref FileFullPaths);
+                if (false == addNewDispData(false, @"", strFileFormatAll, ref FileFullPaths))
+                {
+                    break;
+                }
             }
             return true;
         }
 
-        public void addNewDispData(bool bNewReview,string strCmd,ref List<DisplayData> FileFullPaths)
+
+        public string runCmd(string strCmd)
+        {
+            Cmd c = new Cmd(AppendMsg);
+            string strCmdReturn = c.RunCmd(strCmd);
+            AppendMsg.AppendCmdInfo(strCmdReturn);
+
+            return strCmdReturn;
+            
+        }
+
+        public string ReturnSucessOrFail(string strCmdReturn)
+        {
+            if (strCmdReturn.Contains(strSuccess_Flg))
+            {
+                return strSuccess_Return;
+            }
+
+            return strFail_Return;
+        }
+
+        public bool addNewDispData(bool bNewReview,string strNewResult,string strCmd,ref List<DisplayData> FileFullPaths)
         {
             DisplayData temp = new DisplayData();
             temp.FilePath = strCmd;
-            temp.strFileConvertSuccess = "Fail";
+            temp.strFileConvertSuccess = strFail_Return;
             if (bNewReview == false)
             {
-                temp.strFileConvertSuccess = runCmd(strCmd);
+                //if one file commit failed ,the process is abort.
+                string strCmdReturn = runCmd(strCmd);
+                temp.strFileConvertSuccess = ReturnSucessOrFail(strCmdReturn);
             }
-  
+            else
+            {
+                temp.strFileConvertSuccess = ReturnSucessOrFail(strNewResult);
+            }
+
             //@"ccollab addversions ";
             FileFullPaths.Add(temp);
+
+            if (temp.strFileConvertSuccess == strFail_Return)
+            {
+                return false;
+            }
+ 
+            return true;
         }
 
         public void getFilePathByClearCaseResult(string strResult, out string strNewPath, out string strOldPath)
@@ -177,17 +224,6 @@ namespace Collobrator_update
             strOldPath = strFilePathOld;
         }
 
-        public string runCmd(string strCmd)
-        {
-            Cmd c = new Cmd(AppendMsg);
-            string strCmdReturn = c.RunCmd(strCmd);
-            if (strCmdReturn.Contains(@"successful"))
-            {
-                AppendMsg.AppendCmdInfo(strCmdReturn);
-                return @"Success";
-            }
 
-            return @"Fail";
-        }
     }
 }
