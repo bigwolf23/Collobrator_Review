@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8"?>  
+<root type="ClearCaseConfig" >  
+  <head>  
+    <!--ClearCase 文件映射盘符-->  
+    <mapDisk>Z:</mapDisk>  
+	<branchname>int_10.00.00_dae</branchname> 
+  </head>  
+  <data>  
+    <!--ClearCase 文件映射盘符-->  
+    <unit name="MapDisk">Z:</unit>  
+    
+    <unit name="test1">E118463546</unit>  
+
+    <unit name="test2">396.24</unit>  
+ 
+    <unit name="test3">127.00</unit>  
+
+    <unit name="test4">58.18</unit>  
+
+    <unit name="test5">072331</unit>  
+  </data>  
+</root>  

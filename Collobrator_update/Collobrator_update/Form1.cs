@@ -11,6 +11,7 @@ using System.IO;
 using System.Diagnostics;
 using Microsoft.Win32;
 using System.Threading;
+using System.Xml;
 
 namespace Collobrator_update
 {
@@ -29,34 +30,29 @@ namespace Collobrator_update
 
         private void Form1_Load(object sender, EventArgs e)
         {
+
+            getClearCaseConfig(); 
             Control.CheckForIllegalCrossThreadCalls = false;
             controlShowOrHide(true);
-            getClearCaseMap();
-            
+           
         }
 
-
-
-        private void getClearCaseMap()
+        private void getClearCaseConfig()
         {
-            //HKEY_LOCAL_MACHINE\SYSTEM\CurrentControlSet\Services\lanmanserver\parameters 
-            //HKCU\SOFTWARE\Microsoft\Windows\CurrentVersion\Explorer\MountPoints2
-            string strMapName;
-            RegistryHelper rh = new RegistryHelper();
-            strMapName = rh.GetRegistryData(Registry.LocalMachine,
-                            @"\SOFTWARE\Microsoft\SMS\CurrentUser",
-                            @"UserSID");
+            try
+            {
+                XmlDocument xmlDoc = new XmlDocument();
+                xmlDoc.Load("ClearCase_Config.xml");
+                ClearCaseConfig ad = XmlSerializeUtil.Deserialize(typeof(ClearCaseConfig), xmlDoc.OuterXml) as ClearCaseConfig;
 
-            if (strMapName.Length == 0)
-            {
-                ClearCase_MapPath.Text = @"Z:\";
+                ClearCase_MapPath.Text = ad.Head.MapDisk;
+                ClearCase_Branch.Text = ad.Head.Branchname;
+            }catch(Exception ex){
+
             }
-            else
-            {
-                ClearCase_MapPath.Text = strMapName;
-            }
-            
+
         }
+
 
         private void threadProc(object sender)
         {
@@ -72,7 +68,9 @@ namespace Collobrator_update
             Cc_command.AppendMsg = delegateMethod;
             Cc_command.strCcFilePath = ClearCaseFilePath.Text;
             Cc_command.strCcMapPath = ClearCase_MapPath.Text;
+            Cc_command.strCcBranch = ClearCase_Branch.Text;
             Cc_command.getClearCaseFilePath(ref strFileList);
+
             if (strReviewId.Length == 6 && radio_NewReview.Checked == false)
             {
                 bReturn = Cc_command.getOldReviewFilePath(strReviewId, strFileList, ref m_pFileFullPaths);
@@ -100,13 +98,34 @@ namespace Collobrator_update
        
         }
 
+        private bool isCheckUpdate()
+        {
+            if (ClearCase_MapPath.Text.Length == 0)
+            {
+                MessageBox.Show(@"Please input ClearCase Map Path!!!");
+                return false;
+            }
+
+            if (ClearCase_Branch.Text.Length == 0)
+            {
+                MessageBox.Show(@"Please input ClearCase branch!!!");
+                return false;
+            }
+
+            if (ClearCase_ReviewID.Text.Length != 6)
+            {
+                MessageBox.Show(@"Because this is old review,please input old review ID");
+                return false;
+            }
+            return true;
+        }
+
         private void button1_Click(object sender, EventArgs e)
         {
             Log_info_Edit.Clear();
-            
-            if (ClearCase_MapPath.Text.Length == 0)
+
+            if (false == isCheckUpdate())
             {
-                MessageBox.Show(@"Please input ClearCase_MapPath!!!");
                 return;
             }
 
@@ -116,14 +135,7 @@ namespace Collobrator_update
             }
             else
             {
-                if (ClearCase_ReviewID.Text.Length == 6 )
-                {
-                    updateReviewFile(ClearCase_ReviewID.Text);
-                }
-                else
-                {
-                    MessageBox.Show(@"Because this is Add to old review,please input old review ID");
-                }
+                updateReviewFile(ClearCase_ReviewID.Text);
             }
         }
 

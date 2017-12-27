@@ -42,6 +42,8 @@
             this.seletFile = new System.Windows.Forms.Button();
             this.CcCommitFileDlg = new System.Windows.Forms.OpenFileDialog();
             this.Log_info_Edit = new System.Windows.Forms.RichTextBox();
+            this.label3 = new System.Windows.Forms.Label();
+            this.ClearCase_Branch = new System.Windows.Forms.TextBox();
             this.groupBox1.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.dataGridView1)).BeginInit();
             this.SuspendLayout();
@@ -53,14 +55,14 @@
             this.button_update.Name = "button_update";
             this.button_update.Size = new System.Drawing.Size(106, 26);
             this.button_update.TabIndex = 0;
-            this.button_update.Text = "Update_Review";
+            this.button_update.Text = "Update Review";
             this.button_update.UseVisualStyleBackColor = true;
             this.button_update.Click += new System.EventHandler(this.button1_Click);
             // 
             // radio_NewReview
             // 
             this.radio_NewReview.AutoSize = true;
-            this.radio_NewReview.Location = new System.Drawing.Point(15, 15);
+            this.radio_NewReview.Location = new System.Drawing.Point(24, 15);
             this.radio_NewReview.Name = "radio_NewReview";
             this.radio_NewReview.Size = new System.Drawing.Size(77, 16);
             this.radio_NewReview.TabIndex = 1;
@@ -72,7 +74,7 @@
             // 
             this.radio_OldReview.AutoSize = true;
             this.radio_OldReview.Checked = true;
-            this.radio_OldReview.Location = new System.Drawing.Point(154, 15);
+            this.radio_OldReview.Location = new System.Drawing.Point(162, 15);
             this.radio_OldReview.Name = "radio_OldReview";
             this.radio_OldReview.Size = new System.Drawing.Size(77, 16);
             this.radio_OldReview.TabIndex = 1;
@@ -97,9 +99,9 @@
             this.label1.AutoSize = true;
             this.label1.Location = new System.Drawing.Point(13, 71);
             this.label1.Name = "label1";
-            this.label1.Size = new System.Drawing.Size(125, 12);
+            this.label1.Size = new System.Drawing.Size(131, 12);
             this.label1.TabIndex = 3;
-            this.label1.Text = "ClearCase_CommitFile";
+            this.label1.Text = "ClearCase Commit File";
             // 
             // ClearCaseFilePath
             // 
@@ -128,7 +130,7 @@
             // 
             this.ClearCase_MapPath.Location = new System.Drawing.Point(143, 42);
             this.ClearCase_MapPath.Name = "ClearCase_MapPath";
-            this.ClearCase_MapPath.Size = new System.Drawing.Size(232, 21);
+            this.ClearCase_MapPath.Size = new System.Drawing.Size(133, 21);
             this.ClearCase_MapPath.TabIndex = 8;
             // 
             // label2
@@ -136,27 +138,27 @@
             this.label2.AutoSize = true;
             this.label2.Location = new System.Drawing.Point(13, 44);
             this.label2.Name = "label2";
-            this.label2.Size = new System.Drawing.Size(107, 12);
+            this.label2.Size = new System.Drawing.Size(113, 12);
             this.label2.TabIndex = 7;
-            this.label2.Text = "ClearCase_MapPath";
+            this.label2.Text = "ClearCase Map Path";
             // 
             // ClearCase_ReviewID
             // 
-            this.ClearCase_ReviewID.Location = new System.Drawing.Point(512, 41);
+            this.ClearCase_ReviewID.Location = new System.Drawing.Point(389, 13);
             this.ClearCase_ReviewID.MaxLength = 6;
             this.ClearCase_ReviewID.Name = "ClearCase_ReviewID";
-            this.ClearCase_ReviewID.Size = new System.Drawing.Size(185, 21);
+            this.ClearCase_ReviewID.Size = new System.Drawing.Size(307, 21);
             this.ClearCase_ReviewID.TabIndex = 10;
             this.ClearCase_ReviewID.KeyPress += new System.Windows.Forms.KeyPressEventHandler(this.ClearCase_ReviewID_KeyPress);
             // 
             // ClearCase_ReviewID_label
             // 
             this.ClearCase_ReviewID_label.AutoSize = true;
-            this.ClearCase_ReviewID_label.Location = new System.Drawing.Point(429, 45);
+            this.ClearCase_ReviewID_label.Location = new System.Drawing.Point(324, 18);
             this.ClearCase_ReviewID_label.Name = "ClearCase_ReviewID_label";
-            this.ClearCase_ReviewID_label.Size = new System.Drawing.Size(53, 12);
+            this.ClearCase_ReviewID_label.Size = new System.Drawing.Size(59, 12);
             this.ClearCase_ReviewID_label.TabIndex = 9;
-            this.ClearCase_ReviewID_label.Text = "ReviewId";
+            this.ClearCase_ReviewID_label.Text = "Review Id";
             // 
             // seletFile
             // 
@@ -183,11 +185,29 @@
             this.Log_info_Edit.TabIndex = 12;
             this.Log_info_Edit.Text = "";
             // 
+            // label3
+            // 
+            this.label3.AutoSize = true;
+            this.label3.Location = new System.Drawing.Point(282, 44);
+            this.label3.Name = "label3";
+            this.label3.Size = new System.Drawing.Size(101, 12);
+            this.label3.TabIndex = 13;
+            this.label3.Text = "ClearCase Branch";
+            // 
+            // ClearCase_Branch
+            // 
+            this.ClearCase_Branch.Location = new System.Drawing.Point(389, 41);
+            this.ClearCase_Branch.Name = "ClearCase_Branch";
+            this.ClearCase_Branch.Size = new System.Drawing.Size(307, 21);
+            this.ClearCase_Branch.TabIndex = 14;
+            // 
             // Form1
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 12F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(709, 498);
+            this.Controls.Add(this.ClearCase_Branch);
+            this.Controls.Add(this.label3);
             this.Controls.Add(this.Log_info_Edit);
             this.Controls.Add(this.seletFile);
             this.Controls.Add(this.ClearCase_ReviewID);
@@ -226,6 +246,8 @@
         private System.Windows.Forms.Button seletFile;
         private System.Windows.Forms.OpenFileDialog CcCommitFileDlg;
         private System.Windows.Forms.RichTextBox Log_info_Edit;
+        private System.Windows.Forms.Label label3;
+        private System.Windows.Forms.TextBox ClearCase_Branch;
     }
 }
 

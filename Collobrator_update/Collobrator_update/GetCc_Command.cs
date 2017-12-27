@@ -23,8 +23,7 @@ namespace Collobrator_update
 
     public class GetCc_Command
     {
-        public static string strCollobarate_new_cmd = "ccollab addversions new";
-        //public static string strCollobarate_cmd = "ipconfig";
+        public static string strCollobarate_command = @"ccollab addversions ";
         public static string strNew_keyword = "New review created: Review #";
         public static string strCheckIn_keyword = "CHECKEDIN";
         public static string strCheckOut_keyword = "CheckedOut:";
@@ -33,10 +32,14 @@ namespace Collobrator_update
         public static string strSuccess_Return = @"Success";
         public static string strFail_Return = @"Fail";
 
+        public static string strBlank = @"  ";
+        public static string strSplash = "\"";
+
         public DelegateMsgInfo AppendMsg;
 
         public string strCcFilePath { get; set; }
         public string strCcMapPath{ get; set; }
+        public string strCcBranch { get; set; }
 
         public void getClearCaseFilePath(ref List<string> strFileListOut)
         {
@@ -91,10 +94,10 @@ namespace Collobrator_update
 
             getFilePathByClearCaseResult(strInput, out strNewPath, out strOldPath);
 
-            strFileFormatAll = @"ccollab addversions " +
-                strReviewId + @"  " + "\"" +
-                strNewPath + "\"" + @"  " + "\"" +
-                strOldPath + "\"";
+            strFileFormatAll = strCollobarate_command +
+                strReviewId + strBlank + strSplash +
+                strNewPath + strSplash + strBlank + strSplash +
+                strOldPath + strSplash;
         }
 
         public bool getNewReviewFilePath(string strReviewId, List<string> strFileList, ref List<DisplayData> FileFullPaths)
@@ -194,17 +197,18 @@ namespace Collobrator_update
         {
             int nCheckinWordPos = strResult.IndexOf(strCheckIn_keyword, 0);
             string strFilePathOld = strResult.Substring(25, nCheckinWordPos - 25);
-            
 
-            if (strFilePathOld.Contains(@" \main\int_"))
+            string strKey = @" \main\" + strCcBranch;
+
+            if (strFilePathOld.Contains(strKey))
             {
-                strFilePathOld = strFilePathOld.Replace(@" \main\int_", @"@@\main\int_");
+                strFilePathOld = strFilePathOld.Replace(@" \main\", @"@@\main\");
             }
             else
             {
                 int nPos = strFilePathOld.LastIndexOf(@"\main\");
                 strFilePathOld = strFilePathOld.Remove(nPos - 1);
-                strFilePathOld = strFilePathOld + @"@@\main\int_10.00.00_dae\0";
+                strFilePathOld = strFilePathOld + @"@@\main\"+ strCcBranch + @"\0";
             }
 
             int nFileVerInClearCasePos = strFilePathOld.LastIndexOf(@"\");
