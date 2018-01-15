@@ -112,11 +112,7 @@ namespace Collobrator_update
                 return false;
             }
 
-            if (ClearCase_ReviewID.Text.Length != 6)
-            {
-                MessageBox.Show(@"Because this is old review,please input old review ID");
-                return false;
-            }
+            
             return true;
         }
 
@@ -135,6 +131,12 @@ namespace Collobrator_update
             }
             else
             {
+				if (ClearCase_ReviewID.Text.Length != 6)
+				{
+					MessageBox.Show(@"Because this is old review,please input old review ID");
+					return false;
+				}
+			
                 updateReviewFile(ClearCase_ReviewID.Text);
             }
         }
